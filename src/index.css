@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  font-family: "Manrope", sans-serif;
+  background: #07070a;
+  color: #f3eee2;
+  overflow-x: hidden;
+}
+
+.eyebrow {
+  font-family: "JetBrains Mono", monospace;
+  letter-spacing: 0.25em;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+}
+
+.book-stage {
+  perspective: 2400px;
+  transform-style: preserve-3d;
+}
+
+.page-3d {
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform;
+  /* promotes each page to its own GPU layer so the flip doesn't
+     repaint neighboring pages every frame */
+  transform: translateZ(0);
+}
+
+/* thin gold scrollbar inside pages */
+.gold-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.gold-scroll::-webkit-scrollbar-thumb {
+  background: #8b6f3e;
+  border-radius: 999px;
+}
+.gold-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
