@@ -32,12 +32,9 @@ const skills = [
 
 export default function Profile() {
   return (
-    <div className='w-full h-full bg-parchment text-ink flex flex-col md:grid md:grid-cols-2'>
-      {/* Left page — bio.
-          NOTE: no independent overflow/scroll here — see Experience.tsx
-          for why that clips content in a Grid/Flex row on mobile. Book.tsx's
-          page wrapper is the only scroll container. */}
-      <div className='p-8 flex flex-col items-center text-center gap-3 border-b md:border-b-0 md:border-r border-ink/10 flex-shrink-0'>
+    <div className='w-full h-full bg-parchment text-ink grid grid-cols-1 md:grid-cols-2'>
+      {/* Left page — bio */}
+      <div className='p-8 flex flex-col items-center text-center gap-3 overflow-y-auto gold-scroll border-b md:border-b-0 md:border-r border-ink/10'>
         <div className='w-24 h-24 rounded-full bg-gradient-to-br from-gold-light to-gold-dark flex items-center justify-center font-display text-3xl text-ink'>
           HE
         </div>
@@ -98,7 +95,7 @@ export default function Profile() {
       </div>
 
       {/* Right page — work timeline */}
-      <div className='p-8'>
+      <div className='p-8 overflow-y-auto gold-scroll'>
         <h3 className='font-display text-lg mb-5'>Work &amp; Projects</h3>
         <div className='relative pl-6'>
           <div className='absolute left-[7px] top-1 bottom-1 w-px bg-bronze/30' />

@@ -29,7 +29,7 @@ const apps = [
     stack: "Go · MongoDB · React Native (Expo) · Groq Llama 3.3",
     description:
       "Tasks, notes, and scheduling with a built-in AI assistant. Shipped with a full code audit and released via EAS.",
-    images: Array.from({ length: 8 }, (_, i) => `/carousels/yova/${i + 1}.jpg`),
+    images: Array.from({ length: 8 }, (_, i) => `/carousels/yova/${i + 1}.png`),
   },
   {
     id: "pedal",
