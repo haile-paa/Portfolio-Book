@@ -70,21 +70,40 @@ export default function Book({ pages, current, onChange }: BookProps) {
           const wasFlipped = i < prevCurrentRef.current;
           const isTurningNow = flipped !== wasFlipped;
           const isThisSpread = Boolean(page.spread) && isDesktop;
+
+          // When jumping more than one page at once (e.g. the cover's
+          // "View Projects" button skipping straight to Experience), stagger
+          // each turning page slightly so they cascade like a hand riffling
+          // through pages instead of all snapping over at once.
+          const jumpingForward = current > prevCurrentRef.current;
+          const stagger = isTurningNow
+            ? jumpingForward
+              ? (i - prevCurrentRef.current) * 0.1
+              : (prevCurrentRef.current - 1 - i) * 0.1
+            : 0;
+
           return (
             <motion.div
               key={i}
               className='page-3d absolute inset-0 rounded-2xl overflow-hidden shadow-page border border-gold-dark/30 bg-panel'
               style={{
                 transformOrigin: "left center",
-                zIndex: flipped ? i : total - i,
+                // Two disjoint ranges so a flipped page can never tie in
+                // z-index with an unflipped one (which happened on
+                // multi-page jumps and caused a visible flash/glitch).
+                zIndex: flipped ? i : total * 2 - i,
               }}
               animate={{ rotateY: flipped ? -178 : 0 }}
-              transition={{ duration: 0.6, ease: [0.45, 0, 0.2, 1] }}
+              transition={{
+                duration: 0.6,
+                ease: [0.45, 0, 0.2, 1],
+                delay: stagger,
+              }}
             >
               {/* Fold shadow that sweeps across the page mid-turn, synced
-                  to the same duration so it peaks as the page passes 90°.
-                  Only the page actually turning this render gets it — every
-                  other settled page stays untouched (no flash). */}
+                  to the same duration (and stagger) so it peaks as the page
+                  passes 90°. Only the page actually turning this render
+                  gets it — every other settled page stays untouched. */}
               {isTurningNow && (
                 <motion.div
                   className='absolute inset-0 bg-black pointer-events-none z-20'
@@ -94,6 +113,7 @@ export default function Book({ pages, current, onChange }: BookProps) {
                     duration: 0.6,
                     ease: "easeInOut",
                     times: [0, 0.5, 1],
+                    delay: stagger,
                   }}
                 />
               )}
@@ -121,15 +141,15 @@ export default function Book({ pages, current, onChange }: BookProps) {
           );
         })}
 
-        {/* Prev / Next — icon-only, pinned to either side of the book so
-            they read as book controls rather than a text toolbar. On
-            desktop they float just outside the spine edges; on phone they
-            sit just inside so they stay reachable on small screens. */}
+        {/* Prev / Next — floats just outside the book spine on desktop,
+            where there's room. On phone there's no safe vertical band to
+            float them in (page content varies in height and can run
+            underneath), so they move down next to the dots instead. */}
         <button
           onClick={() => goTo(current - 1)}
           disabled={current === 0}
           aria-label='Previous page'
-          className='absolute top-1/2 -translate-y-1/2 left-2 md:-left-14 z-30 w-10 h-10 rounded-full flex items-center justify-center bg-ink/70 backdrop-blur-sm border border-gold-dark/50 text-parchment/70 hover:text-gold hover:border-gold transition-colors disabled:opacity-20 disabled:pointer-events-none'
+          className='hidden md:flex absolute top-1/2 -translate-y-1/2 -left-14 z-30 w-10 h-10 rounded-full items-center justify-center bg-ink/70 backdrop-blur-sm border border-gold-dark/50 text-parchment/70 hover:text-gold hover:border-gold transition-colors disabled:opacity-20 disabled:pointer-events-none'
         >
           <ChevronLeft size={18} />
         </button>
@@ -137,26 +157,48 @@ export default function Book({ pages, current, onChange }: BookProps) {
           onClick={() => goTo(current + 1)}
           disabled={current === total - 1}
           aria-label='Next page'
-          className='absolute top-1/2 -translate-y-1/2 right-2 md:-right-14 z-30 w-10 h-10 rounded-full flex items-center justify-center bg-ink/70 backdrop-blur-sm border border-gold-dark/50 text-parchment/70 hover:text-gold hover:border-gold transition-colors disabled:opacity-20 disabled:pointer-events-none'
+          className='hidden md:flex absolute top-1/2 -translate-y-1/2 -right-14 z-30 w-10 h-10 rounded-full items-center justify-center bg-ink/70 backdrop-blur-sm border border-gold-dark/50 text-parchment/70 hover:text-gold hover:border-gold transition-colors disabled:opacity-20 disabled:pointer-events-none'
         >
           <ChevronRight size={18} />
         </button>
       </div>
 
-      {/* Page dots only */}
-      <div className='flex items-center gap-2'>
-        {pages.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => goTo(i)}
-            aria-label={`Go to ${pages[i].label}`}
-            className={`h-1.5 rounded-full transition-all ${
-              i === current
-                ? "w-6 bg-gold"
-                : "w-1.5 bg-parchment/25 hover:bg-parchment/50"
-            }`}
-          />
-        ))}
+      {/* Bottom controls: on phone, Prev/Next flank the dots (no overlap
+          risk since they're below the book, not floating over it). On
+          desktop the side arrows already cover navigation, so just dots. */}
+      <div className='flex items-center gap-4'>
+        <button
+          onClick={() => goTo(current - 1)}
+          disabled={current === 0}
+          aria-label='Previous page'
+          className='md:hidden flex w-9 h-9 rounded-full items-center justify-center bg-ink/70 border border-gold-dark/50 text-parchment/70 hover:text-gold hover:border-gold transition-colors disabled:opacity-20 disabled:pointer-events-none'
+        >
+          <ChevronLeft size={16} />
+        </button>
+
+        <div className='flex items-center gap-2'>
+          {pages.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goTo(i)}
+              aria-label={`Go to ${pages[i].label}`}
+              className={`h-1.5 rounded-full transition-all ${
+                i === current
+                  ? "w-6 bg-gold"
+                  : "w-1.5 bg-parchment/25 hover:bg-parchment/50"
+              }`}
+            />
+          ))}
+        </div>
+
+        <button
+          onClick={() => goTo(current + 1)}
+          disabled={current === total - 1}
+          aria-label='Next page'
+          className='md:hidden flex w-9 h-9 rounded-full items-center justify-center bg-ink/70 border border-gold-dark/50 text-parchment/70 hover:text-gold hover:border-gold transition-colors disabled:opacity-20 disabled:pointer-events-none'
+        >
+          <ChevronRight size={16} />
+        </button>
       </div>
     </div>
   );

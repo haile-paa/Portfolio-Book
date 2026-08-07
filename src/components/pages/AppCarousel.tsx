@@ -35,7 +35,7 @@ export default function AppCarousel({ images, alt }: AppCarouselProps) {
 
   return (
     <div className='flex flex-col items-center gap-3 w-full'>
-      <div className='relative w-full max-w-[320px] aspect-[4/5] rounded-2xl border-4 border-bronze/40 bg-black overflow-hidden shadow-page select-none'>
+      <div className='relative w-full max-w-[260px] md:max-w-[320px] aspect-[4/5] rounded-2xl border-4 border-bronze/40 bg-black overflow-hidden shadow-page select-none'>
         <AnimatePresence initial={false} custom={direction} mode='popLayout'>
           <motion.img
             key={index}

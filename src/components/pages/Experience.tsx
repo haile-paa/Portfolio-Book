@@ -9,8 +9,8 @@ import AppCarousel from "./AppCarousel";
  *
  * Drop numbered images (1.jpg, 2.jpg, ...) into:
  *   public/carousels/<id>/
- * and list them in the `images` array below. Hulu Service is already
- * wired up from your LinkedIn carousel PDF.
+ * and list them in the `images` array below. Hulu Service and YoVA are
+ * already wired up.
  */
 const apps = [
   {
@@ -29,8 +29,7 @@ const apps = [
     stack: "Go · MongoDB · React Native (Expo) · Groq Llama 3.3",
     description:
       "Tasks, notes, and scheduling with a built-in AI assistant. Shipped with a full code audit and released via EAS.",
-    // TODO: add your own screenshots to public/carousels/yova/1.jpg ...
-    images: Array.from({ length: 8 }, (_, i) => `/carousels/yova/${i + 1}.png`),
+    images: Array.from({ length: 8 }, (_, i) => `/carousels/yova/${i + 1}.jpg`),
   },
   {
     id: "pedal",
@@ -49,9 +48,13 @@ export default function Experience() {
   const app = apps.find((a) => a.id === active)!;
 
   return (
-    <div className='w-full h-full bg-panel grid grid-cols-1 md:grid-cols-2'>
-      {/* Left page — controls + description */}
-      <div className='p-6 flex flex-col gap-4 overflow-y-auto gold-scroll border-b md:border-b-0 md:border-r border-parchment/10'>
+    <div className='w-full h-full bg-panel flex flex-col md:grid md:grid-cols-2'>
+      {/* Info column — heading, app switcher, description.
+          NOTE: deliberately no independent overflow/scroll on this column.
+          A scrollable CSS Grid item with no explicit height can be shrunk
+          by the browser below its content size (clipping text) — the
+          *only* scroll container should be the page wrapper in Book.tsx. */}
+      <div className='p-5 md:p-6 flex flex-col gap-4 md:border-r border-parchment/10 flex-shrink-0'>
         <div>
           <span className='eyebrow text-gold'>Experience</span>
           <h2 className='font-display text-xl mt-1'>Swipe through the work</h2>
@@ -61,19 +64,22 @@ export default function Experience() {
           </p>
         </div>
 
-        <div className='flex flex-col gap-2'>
+        {/* App switcher: horizontal scrollable pill row on phone (keeps
+            all three reachable without eating vertical space), a stacked
+            list on desktop where there's room. */}
+        <div className='flex md:flex-col gap-2 overflow-x-auto md:overflow-visible -mx-5 px-5 md:mx-0 md:px-0 pb-1 md:pb-0'>
           {apps.map((a) => (
             <button
               key={a.id}
               onClick={() => setActive(a.id)}
-              className={`text-left text-sm px-3 py-2.5 rounded-lg border transition ${
+              className={`text-left text-sm px-3.5 py-2.5 rounded-lg border transition flex-shrink-0 whitespace-nowrap md:whitespace-normal ${
                 active === a.id
                   ? "border-gold bg-gold/10 text-gold"
                   : "border-parchment/15 text-parchment/60 hover:border-parchment/30"
               }`}
             >
               <span className='font-semibold'>{a.name}</span>
-              <span className='block text-[11px] text-parchment/40 mt-0.5'>
+              <span className='hidden md:block text-[11px] text-parchment/40 mt-0.5'>
                 {a.tag}
               </span>
             </button>
@@ -88,8 +94,8 @@ export default function Experience() {
         </div>
       </div>
 
-      {/* Right page — swipeable carousel in a phone frame */}
-      <div className='p-6 flex flex-col items-center justify-center gap-3'>
+      {/* Carousel column */}
+      <div className='p-5 md:p-6 flex flex-col items-center justify-center gap-3'>
         <AppCarousel key={app.id} images={app.images} alt={app.name} />
       </div>
     </div>
