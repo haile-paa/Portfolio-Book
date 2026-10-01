@@ -1,56 +1,12 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-html,
-body,
-#root {
-  height: 100%;
-}
-
-body {
-  font-family: "Manrope", sans-serif;
-  background: #07070a;
-  color: #f3eee2;
-  overflow-x: hidden;
-}
-
-.eyebrow {
-  font-family: "JetBrains Mono", monospace;
-  letter-spacing: 0.25em;
-  font-size: 0.68rem;
-  text-transform: uppercase;
-}
-
-.book-stage {
-  perspective: 2400px;
-  transform-style: preserve-3d;
-}
-
-.page-3d {
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-  will-change: transform;
-  /* promotes each page to its own GPU layer so the flip doesn't
-     repaint neighboring pages every frame */
-  transform: translateZ(0);
-}
-
-/* thin gold scrollbar inside pages */
-.gold-scroll::-webkit-scrollbar {
-  width: 6px;
-}
-.gold-scroll::-webkit-scrollbar-thumb {
-  background: #8b6f3e;
-  border-radius: 999px;
-}
-.gold-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
-}
+@import "tailwindcss";
+:root{--bg:#F6F4EE;--fg:#14201C;--mut:#5B6A64;--ln:#D9D6CB;--ac:#F2A93B;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root{--bg:#0C1713;--fg:#EDEAE0;--mut:#93A39B;--ln:#22332C}}
+html{scroll-behavior:smooth;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:'Hanken Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.disp{font-family:'Bricolage Grotesque','Hanken Grotesk',system-ui,sans-serif;letter-spacing:-.025em}
+.mut{color:var(--mut)}.ln{border-color:var(--ln)}
+.hero{background:radial-gradient(60% 70% at 75% 45%,rgba(43,184,154,.22),transparent 70%),#0F2A22;color:#F3EFE4}
+.btn{display:inline-block;padding:.85rem 1.5rem;border-radius:999px;font-weight:600;transition:transform .2s,background .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn:focus-visible,a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--ac);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
